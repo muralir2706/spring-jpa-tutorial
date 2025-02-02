@@ -1,0 +1,4 @@
+theme:
+  colors:
+    primary:
+      main: '#ff0000'  # Change the primary color
