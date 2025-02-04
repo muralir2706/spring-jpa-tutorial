@@ -1,16 +1,15 @@
 version: '3'
 services:
   app:
-    image: eclipse-temurin:21-jdk-alpine
+    build: .
     ports:
-      - "8080:8080"
+      - "21000:21000"
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/mydb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:54321/mydb
       - SPRING_DATASOURCE_USERNAME=myuser
       - SPRING_DATASOURCE_PASSWORD=mypassword
-    command: java -jar myapp.jar
 
   db:
     image: postgres
@@ -19,4 +18,8 @@ services:
       - POSTGRES_PASSWORD=mypassword
       - POSTGRES_DB=mydb
     ports:
-      - "5432:5432"
+      - "54321:5432"  # Exposing PostgreSQL on port 54321
+    healthcheck:
+        test: [ "CMD", "pg_isready", "-U", "myuser" ]
+        interval: 10s
+        retries: 5

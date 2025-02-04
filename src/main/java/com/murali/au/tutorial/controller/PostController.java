@@ -1,49 +1,44 @@
 package com.murali.au.tutorial.controller;
 
 import com.murali.au.tutorial.Post;
-import com.murali.au.tutorial.exception.PostNotFoundException;
-import com.murali.au.tutorial.repo.PostRepository;
+import com.murali.au.tutorial.dto.PostDTO;
+import com.murali.au.tutorial.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/posts")
 public class PostController {
 
     @Autowired
-    private PostRepository postRepository;
+    private PostService postService;
 
     @GetMapping
-    public List<Post> getAllPosts() {
-        return (List<Post>) postRepository.findAll();
+    public List<PostDTO> getAllPosts() {
+        return postService.getAllPosts();
     }
 
     @PostMapping
-    public Post createPost(@RequestBody Post post) {
-        return postRepository.save(post);
+    public PostDTO createPost(@Valid @RequestBody PostDTO postDTO) {
+        return postService.createPost(postDTO);
     }
 
     @GetMapping("/{id}")
     public Post getPostById(@PathVariable Long id) {
-        return postRepository.findById(id).orElseThrow( () -> new PostNotFoundException("Post not found"));
+        return postService.getPostById(id);
     }
 
     @PutMapping("/{id}")
     public Post updatePost(@PathVariable Long id, @RequestBody Post post) {
-        Post existingPost = postRepository.findById(id).orElse(null);
-        if (existingPost != null) {
-            existingPost.setTitle(post.getTitle());
-            existingPost.setContent(post.getContent());
-            existingPost.setAuthor(post.getAuthor());
-            return postRepository.save(existingPost);
-        }
-        return null;
+        return postService.updatePost(id, post);
     }
 
     @DeleteMapping("/{id}")
     public void deletePost(@PathVariable Long id) {
-        postRepository.deleteById(id);
+        postService.deletePost(id);
     }
 }
